@@ -1,5 +1,6 @@
 import requests 
 from bs4 import BeautifulSoup
+from bs4 import Tag
 import json
 
 URL = "https://www.sar.unicamp.br/RU/view/site/cardapio.php"
