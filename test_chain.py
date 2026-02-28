@@ -1,3 +1,4 @@
+import os
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -5,42 +6,52 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.3)
+llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.2)
 
+with open("prompts/menu_formatter.md", "r", encoding="utf-8") as f:
+    system_prompt = f.read()
 
 prompt = ChatPromptTemplate.from_messages([
-    ("system", """You are a helpful assistant that formats university restaurant menus for a WhatsApp message.
-
-        STRICT FORMATTING RULES:
-        - Do NOT use markdown. No **, no ##, no -, no *.
-        - Use WhatsApp native formatting only: *bold* for section headers, _italic_ if needed.
-        - Use emojis to make it visually scannable.
-        - Keep it concise. Students read this on their phones.
-        - If there is no menu for a meal, say so clearly.
-
-        OUTPUT EXAMPLE:
-        🍽️ *Today's Menu — Monday, Jan 13*
-
-        ☀️ *Lunch*
-        Normal: Rice, beans, grilled chicken, salad
-        Vegan: Rice, beans, grilled tofu, salad
-
-        🌙 *Dinner*
-        Normal: Pasta, tomato sauce, meatballs
-        Vegan: Pasta, tomato sauce, mushrooms"""),
-            ("human", "Here is today's raw menu data:\n\n{menu_text}\n\nFormat it following the rules above.")
+    ("system", system_prompt),
+    ("human", "Aqui está o cardápio de hoje:\n\n{menu_text}\n\nCrie a mensagem para o grupo.")
 ])
-output_parser = StrOutputParser()
 
+output_parser = StrOutputParser()
 chain = prompt | llm | output_parser
 
-if __name__ == "__main__":
-    mock_menu = """
-    Lunch - Normal: Rice, beans, grilled chicken, salad, orange juice
-    Lunch - Vegan: Rice, beans, grilled tofu, salad, orange juice
-    Dinner - Normal: Pasta, tomato sauce, meatballs, salad
-    Dinner - Vegan: Pasta, tomato sauce, mushrooms, salad
-    """
+def get_formatted_time() -> str:
+    import locale 
+    from datetime import datetime as dt
 
-    result = chain.invoke({"menu_text": mock_menu})
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+
+    return dt.now().strftime("%A - %d de %B")
+
+def format_menu_for_llm(menu: dict) -> str:
+    lines = []
+
+    lines.append(get_formatted_time())
+
+    for meal, options in menu.items():
+        lines.append(f"{meal}:")
+        for diet, dishes in options.items():
+            lines.append(f"  {diet}:")
+            for category, item in dishes.items():
+                lines.append(f"    {category}: {item}")
+        lines.append("")
+
+    # Making sure it gets the right day
+    lines.append(get_formatted_time())
+    
+    return "\n".join(lines)
+
+def get_formatted_menu(menu: dict) -> str:
+    menu_text = format_menu_for_llm(menu)
+    return chain.invoke({"menu_text": menu_text})
+
+
+if __name__ == "__main__":
+    from scraper import get_todays_menu
+    menu = get_todays_menu()
+    result = get_formatted_menu(menu)
     print(result)

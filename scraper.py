@@ -23,9 +23,7 @@ def process_option(option:Tag) -> dict:
     return option
 
 def process_meal(meal: Tag) -> dict:
-
     options = meal.find_all("div", class_="col-6")
-    print(type(meal))
 
     normal = process_option(options[0])
     vegan  = process_option(options[1])
