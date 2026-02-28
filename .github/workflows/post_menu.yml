@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
+      - name: Install Portuguese locale
+        run: sudo locale-gen pt_BR.UTF-8
 
       - name: Set up Python
         uses: actions/setup-python@v5
