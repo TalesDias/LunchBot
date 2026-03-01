@@ -23,10 +23,12 @@ chain = prompt | llm | output_parser
 def get_formatted_time() -> str:
     import locale 
     from datetime import datetime as dt
+    from zoneinfo import ZoneInfo
 
     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+    now = dt.now(ZoneInfo("America/Sao_Paulo"))
 
-    return dt.now().strftime("%A - %d de %B")
+    return now.strftime("%A - %d de %B")
 
 def format_menu_for_llm(menu: dict) -> str:
     lines = []
