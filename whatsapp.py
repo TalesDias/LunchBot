@@ -19,7 +19,12 @@ def send_message(text: str) -> bool:
     }
     response = requests.post(url, json=payload)
     
-    return response.status_code == 200
+    if response.status_code != 200:
+        print(f"HTTP Error: {response.status_code}")
+        print(f"Response body: {response.text}")
+        return False
+    
+    return True
 
 
 if __name__ == "__main__":
