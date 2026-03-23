@@ -1,0 +1,27 @@
+name: Notify Failure
+
+on:
+  workflow_call:
+    secrets:
+      GREEN_API_INSTANCE_ID:
+        required: true
+      GREEN_API_TOKEN:
+        required: true
+      GREEN_API_PERSONAL_ID:
+        required: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.12'
+          
+      - run: uv sync
+      - run: uv run python notify.py
+        env:
+          GREEN_API_INSTANCE_ID: ${{ secrets.GREEN_API_INSTANCE_ID }}
+          GREEN_API_TOKEN: ${{ secrets.GREEN_API_TOKEN }}
+          GREEN_API_RECEIVER_ID: ${{ secrets.GREEN_API_PERSONAL_ID }}
