@@ -6,7 +6,7 @@ load_dotenv()
 
 INSTANCE_ID = os.getenv("GREEN_API_INSTANCE_ID")
 API_TOKEN   = os.getenv("GREEN_API_TOKEN")
-GROUP_ID    = os.getenv("GREEN_API_GROUP_ID")
+RECEIVER_ID    = os.getenv("GREEN_API_RECEIVER_ID")
 
 BASE_URL = f"https://api.green-api.com/waInstance{INSTANCE_ID}"
 
@@ -14,7 +14,7 @@ BASE_URL = f"https://api.green-api.com/waInstance{INSTANCE_ID}"
 def send_message(text: str) -> bool:
     url = f"{BASE_URL}/sendMessage/{API_TOKEN}"
     payload = {
-        "chatId": GROUP_ID,
+        "chatId": RECEIVER_ID,
         "message": text
     }
     response = requests.post(url, json=payload)
