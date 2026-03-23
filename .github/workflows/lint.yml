@@ -6,9 +6,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: '3.12'
-          cache: 'pip'
-      - run: pip install ruff
-      - run: ruff check . --select "E,F,I"
+          
+      - run: uv sync
+      - run: uv run ruff check . --select "E,F,I"
+      - run: uv run ruff format --check .
