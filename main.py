@@ -20,8 +20,9 @@ if __name__ == "__main__":
     print(f"Menu fetched! Meals found: {count_meals(menu)}\n")
 
     print("Generating fancy message.....")
-    message = get_formatted_menu(menu)
-    print(f"Message generated! First line: {message.partition('\n')[0]}\n")
+    message, question = get_formatted_menu(menu)
+    print(f"The question asked was:\n{question}\n")
+    print(f"Message generated! Take a look:\n{message}\n")
 
     print("Sending message to WhatsApp.....")
     res     = send_message(message)
