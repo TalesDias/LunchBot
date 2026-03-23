@@ -4,6 +4,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
 
+import locale 
+from datetime import datetime as dt
+from zoneinfo import ZoneInfo
+
 load_dotenv()
 
 temperature = float(os.getenv("MODEL_TEMPERATURE", "0.1"))
@@ -14,17 +18,13 @@ with open("prompts/menu_formatter.md", "r", encoding="utf-8") as f:
 
 prompt = ChatPromptTemplate.from_messages([
     ("system", system_prompt),
-    ("human", "Aqui está o cardápio de hoje:\n\n{menu_text}\n\nCrie a mensagem para o grupo.")
+    ("human", "Aqui está o cardápio de hoje:\n\n{menu_text}\n\n{mirage_instruction}\n\nCrie a mensagem para o grupo.")
 ])
 
 output_parser = StrOutputParser()
 chain = prompt | llm | output_parser
 
 def get_formatted_time() -> str:
-    import locale 
-    from datetime import datetime as dt
-    from zoneinfo import ZoneInfo
-
     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
     now = dt.now(ZoneInfo("America/Sao_Paulo"))
 
@@ -48,9 +48,20 @@ def format_menu_for_llm(menu: dict) -> str:
     
     return "\n".join(lines)
 
+def get_mirage_line () -> str:
+    now = dt.now(ZoneInfo("America/Sao_Paulo"))
+    # First Thursday of the month = Thursday where day <= 7
+    if now.weekday() == 3 and now.day <= 7 or True:
+        return "Hoje é dia de mencionar o Mirage! Inclua uma referência ao Miragem na frase final 🍸" 
+    else:
+        return "Não mencione o Mirage hoje."
+
+
 def get_formatted_menu(menu: dict) -> str:
     menu_text = format_menu_for_llm(menu)
-    return chain.invoke({"menu_text": menu_text})
+    mirage_line = get_mirage_line()
+        
+    return chain.invoke({"menu_text": menu_text, "mirage_instruction": mirage_line})
 
 
 if __name__ == "__main__":
