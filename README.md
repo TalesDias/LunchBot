@@ -2,7 +2,7 @@
 
 ## Summary
 
-The LunchBot posts UNICAMP's restaurant menu everyday at around 8AM. The menu is scrapped from the official website, a message is crafted by a GPT model and finally posted to a Whatsapp group using GREEN-API.
+The LunchBot posts UNICAMP's restaurant menu everyday at around 8AM. The menu is scrapped from the official website, a message is crafted by an LLM and finally posted to a Whatsapp group using GREEN-API.
 
 *Currently only available for the restaurants at Limeira, but it could be extend it to Campinas if the demand exists.*
 
@@ -12,7 +12,7 @@ The code is conceptually divided into four sections, the scrapping, the formatti
 
 **The scrapping** is done on `scraper.py` it using `Beautiful Soup`, by first finding the lunch and dinner sections, then in each one the normal and the vegetarian options and finally processing the table to read the menu, before returning the whole menu in JSON format.
 
-**The formatting** is done on `lang_proc.py` where first the menu JSON is processed into a single string before being fed to langchain. Langchain then uses the GPT model and the prompt provided at `prompts/menu_formater.md` to generate a custom message, which will be sent to the user.
+**The formatting** is done on `lang_proc.py` where first the menu JSON is processed into a single string before being fed to langchain. Langchain then uses an LLM model and the prompt provided at `prompts/menu_formatter.md` to generate a custom message, which will be sent to the user.
 
 **The sending** is done on `whatsapp.py` and its quite literaly just using the `requests` library to send an HTTP request with the menu to GREEN-API so it can sent it to the requested group.
 
@@ -24,8 +24,8 @@ The code is conceptually divided into four sections, the scrapping, the formatti
 # clone and set up environment
 git clone https://github.com/your-username/lunch-bot
 cd lunch-bot
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install uv
+uv sync
 ```
 
 Create a `.env` file:
@@ -33,17 +33,18 @@ Create a `.env` file:
 GROQ_API_KEY=...
 GREEN_API_INSTANCE_ID=...
 GREEN_API_TOKEN=...
-GREEN_API_GROUP_ID=...
+GREEN_API_RECEIVER_ID=...
+GREEN_API_PERSONAL_ID=... # Only needed for test_menu.yml
 MODEL_TEMPERATURE=0.2
 ```
 
 ```bash
-python main.py
+uv run python main.py
 ```
 
 ## Deployment
 
-The bot runs on GitHub Actions with a cron trigger. To run it yourself, set up the same variables from `.env` as repository secrets.
+The bot runs on GitHub Actions with a cron trigger. To run it yourself, set up the same variables from `.env` as repository secrets. Additional actions include notifying of failed runs, testing the menu in a private chat and linting the code.
 
 The workflow runs daily at 11:00 UTC (08:00 Brasília).
 
@@ -61,7 +62,7 @@ I had two goals when making my choices for this project: Making it actually usef
 
 ## Inspiration
 
-That Whatsapp message with the daily menu is also something I really missed since the last bot was deactivated (RIP Feed Bandeco), this project recreates exactly that. But even though it would be sufficient to just print a formated version of the menu, I wanted to stir things up and add something... different, and when the idea of letting a GPT craft the message crossed my mind, I knew I had to do it because it just sounded very funny.
+That Whatsapp message with the daily menu is also something I really missed since the last bot was deactivated (RIP Feed Bandeco), this project recreates exactly that. But even though it would be sufficient to just print a formated version of the menu, I wanted to stir things up and add something... different, and when the idea of letting an LLM craft the message crossed my mind, I knew I had to do it because it just sounded very funny.
 
 ## What I learned
 
@@ -71,3 +72,5 @@ Apart from mourning the last bot, another big driver to actually make this proje
 - **Prompt engineering** — few-shot examples, tone directives, explicit formatting rules
 - **Provider abstraction** — swap Ollama for Groq by changing only one line
 - **GitHub Actions as a cron runner** — schedule tasks without extra infrastructure
+- **pre-commit** — check the code before allowing a commit
+- **uv** — easier dependency and environment management
