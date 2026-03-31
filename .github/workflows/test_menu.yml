@@ -6,6 +6,12 @@ on:
 jobs:
   test_menu:
     runs-on: ubuntu-latest
+    env:
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      GREEN_API_INSTANCE_ID: ${{ secrets.GREEN_API_INSTANCE_ID }}
+      GREEN_API_TOKEN: ${{ secrets.GREEN_API_TOKEN }}
+      GREEN_API_RECEIVER_ID: ${{ secrets.GREEN_API_PERSONAL_ID }}
+      MODEL_TEMPERATURE: ${{ vars.MODEL_TEMPERATURE }}
     steps:
       - uses: actions/checkout@v6
 
@@ -20,9 +26,3 @@ jobs:
 
       - run: uv run python send_daily.py
       - run: uv run python send_weekly.py
-        env:
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          GREEN_API_INSTANCE_ID: ${{ secrets.GREEN_API_INSTANCE_ID }}
-          GREEN_API_TOKEN: ${{ secrets.GREEN_API_TOKEN }}
-          GREEN_API_RECEIVER_ID: ${{ secrets.GREEN_API_PERSONAL_ID }}
-          MODEL_TEMPERATURE: ${{ vars.MODEL_TEMPERATURE }}

@@ -1,4 +1,4 @@
-name: Post Daily Menu
+name: Post Weekly Menu
 
 on:
   schedule:
