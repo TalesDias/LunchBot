@@ -2,7 +2,7 @@ name: Post Daily Menu
 
 on:
   schedule:
-    - cron: '0 11 * * *'  # 8AM UTC-3
+    - cron: '0 11 * * 1-6' 
   workflow_dispatch:
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
       
       - run: uv sync
 
-      - run: uv run python main.py
+      - run: uv run python send_daily.py
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GREEN_API_INSTANCE_ID: ${{ secrets.GREEN_API_INSTANCE_ID }}

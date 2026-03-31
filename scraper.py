@@ -1,4 +1,8 @@
 import json
+import locale
+from datetime import datetime as dt
+from datetime import timedelta
+from zoneinfo import ZoneInfo
 
 import requests
 from bs4 import BeautifulSoup, Tag
@@ -37,17 +41,11 @@ def process_meal(meal: Tag) -> dict:
     return meal
 
 
-def get_todays_menu() -> dict:
-    r = requests.get(URL)
-
-    soup = BeautifulSoup(r.text, "html.parser")
-
-    dia = soup.find(id="dia")
-
+def process_day(day: Tag) -> dict:
     # Yes, I know the id's don't make sense but it is right
     # There was probably some confusion while designing the website
-    lunch = process_meal(dia.find(id="normal"))
-    dinner = process_meal(dia.find(id="vegetariano"))
+    lunch = process_meal(day.find(id="normal"))
+    dinner = process_meal(day.find(id="vegetariano"))
 
     menu = {}
 
@@ -57,7 +55,39 @@ def get_todays_menu() -> dict:
     return menu
 
 
+def get_todays_menu() -> dict:
+    r = requests.get(URL)
+
+    soup = BeautifulSoup(r.text, "html.parser")
+
+    day = soup.find(id="dia")
+
+    return process_day(day)
+
+
+def get_weekly_menu() -> dict:
+
+    locale.setlocale(locale.LC_ALL, "pt_BR.UTF-8")
+    today = dt.now(ZoneInfo("America/Sao_Paulo"))
+
+    week = {}
+
+    for i in range(1, 7):
+        date = today + timedelta(days=i)
+
+        date_name = date.strftime("%Y-%m-%d")
+        date_week_name = date.strftime("%A")
+
+        r = requests.post(URL, {"data": date_name})
+        soup = BeautifulSoup(r.text, "html.parser")
+        day = soup.find(id="dia")
+
+        week[date_week_name] = process_day(day)
+
+    return week
+
+
 if __name__ == "__main__":
-    menu = get_todays_menu()
+    menu = get_weekly_menu()
     parsed = json.dumps(menu, indent=4, ensure_ascii=False).encode("utf8")
     print(parsed.decode())
