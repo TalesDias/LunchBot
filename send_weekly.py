@@ -9,10 +9,12 @@ def format_message(menus: dict) -> str:
     for week_name, day in menus.items():
         lines = [week_name.capitalize()]
 
-        for label, emoji, meal in (("Almoço", "☀️", day["Almoço"]), ("Jantar", "🌙", day["Jantar"])):
+        for label, emoji in (("Almoço", "☀️"), ("Jantar", "🌙")):
+            meal = day[label]
             sides = [meal[side].get("Prato Principal") for side in ("Vegano", "Normal")]
             pratos = [p for p in sides if p]
-            lines.append(f"{emoji} {label}: " + (" | ".join(pratos) if pratos else "Essa refeição não está presente"))
+            text = " | ".join(pratos) if pratos else "Essa refeição não está presente"
+            lines.append(f"{emoji} {label}: {text}")
 
         days_str.append("\n".join(lines) + "\n\n")
 
