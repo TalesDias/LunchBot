@@ -18,8 +18,11 @@ def send_message(text: str) -> bool:
     response = requests.post(url, json=payload)
 
     if response.status_code != 200:
-        print(f"HTTP Error: {response.status_code}")
-        print(f"Response body: {response.text}")
+        try:
+            detail = response.json().get("message", "")
+        except ValueError:
+            detail = ""
+        print(f"HTTP Error: {response.status_code} {detail}".strip())
         return False
 
     return True
