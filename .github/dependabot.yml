@@ -1,0 +1,8 @@
+version: 2
+updates:
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    # 0 disables version-update PRs; security-update PRs are unaffected
+    open-pull-requests-limit: 0
