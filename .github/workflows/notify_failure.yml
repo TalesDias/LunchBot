@@ -10,6 +10,9 @@ on:
       GREEN_API_PERSONAL_ID:
         required: true
 
+permissions:
+  contents: read
+
 jobs:
   notify:
     runs-on: ubuntu-latest

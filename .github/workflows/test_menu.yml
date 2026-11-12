@@ -3,6 +3,9 @@ name: Test Menu (Personal)
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test_menu:
     runs-on: ubuntu-latest

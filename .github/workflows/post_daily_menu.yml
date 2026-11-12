@@ -5,6 +5,9 @@ on:
     - cron: '17 3 * * *' 
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   send_menu:
     runs-on: ubuntu-latest
