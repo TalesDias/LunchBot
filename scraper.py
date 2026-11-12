@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 import requests
 from bs4 import BeautifulSoup, Tag
 
-URL = "https://www.sar.unicamp.br/RU/view/site/cardapio.php"
+URL = "https://sistemas.prefeituralimeira.unicamp.br/RU/view/site/cardapio.php"
 
 
 def process_option(option: Tag) -> dict:

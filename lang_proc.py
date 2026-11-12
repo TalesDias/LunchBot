@@ -11,7 +11,7 @@ from langchain_groq import ChatGroq
 load_dotenv()
 
 temperature = float(os.getenv("MODEL_TEMPERATURE", "0.1"))
-llm = ChatGroq(model="llama-3.1-8b-instant", temperature=temperature)
+llm = ChatGroq(model="openai/gpt-oss-120b", temperature=temperature)
 
 with open("prompts/menu_formatter.md", "r", encoding="utf-8") as f:
     system_prompt = f.read()
